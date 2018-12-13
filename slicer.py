@@ -49,7 +49,7 @@ def fromPhaseCurve(xi, flux, nSlices, fluxErr=None, G=None, fullOutput=False,
     # Solve for the slice brightnesses
     j = differential_evolution(
         lambda j: (((np.matmul(G, j)-flux)/fluxErr)**2).sum(),
-        zip(np.zeros(nSlices), brightnessMax*np.ones(nSlices)))
+        list(zip(np.zeros(nSlices), brightnessMax*np.ones(nSlices))))
     if fullOutput:
         return j
     return j.x

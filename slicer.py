@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import differential_evolution
+from scipy.optimize import differential_evolution, lsq_linear
 
 
 def angleWrap(x):
@@ -34,7 +34,7 @@ def toPhaseCurve(j, xi, G=None):
 
 
 def fromPhaseCurve(xi, flux, nSlices, fluxErr=None, G=None, fullOutput=False,
-                   brightnessMax=10.):
+                   brightnessMax=10., priorStd=1e3):
     '''Computes the slice brightnesses from a given phase curve.  Technically,
     this is a linear model, but it is so poorly-behaved that this approach uses
     differential evolution to solve the equations.  This can *still* be
@@ -46,10 +46,19 @@ def fromPhaseCurve(xi, flux, nSlices, fluxErr=None, G=None, fullOutput=False,
     if fluxErr is None:
         fluxErr = np.ones(len(flux))
 
-    # Solve for the slice brightnesses
-    j = differential_evolution(
-        lambda j: (((np.matmul(G, j)-flux)/fluxErr)**2).sum(),
-        list(zip(np.zeros(nSlices), brightnessMax*np.ones(nSlices))))
-    if fullOutput:
-        return j
-    return j.x
+    if priorStd and priorStd > 0:
+        # Compute with bounded ridge regression using the pseudo-observations method.
+        X = np.vstack([G, np.eye(nSlices)/priorStd])
+        y = np.concatenate([flux, np.mean(flux) * np.ones(nSlices)])
+        f = lsq_linear(X, y, bounds=[0, np.inf])
+        if fullOutput:
+            return f
+        return f.x
+    else:
+        # Solve for the slice brightnesses
+        j = differential_evolution(
+            lambda j: (((np.matmul(G, j)-flux)/fluxErr)**2).sum(),
+            list(zip(np.zeros(nSlices), brightnessMax*np.ones(nSlices))))
+        if fullOutput:
+            return j
+        return j.x

@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 from scipy.optimize import differential_evolution, lsq_linear
 
 
@@ -52,7 +53,11 @@ def fromPhaseCurve(xi, flux, nSlices, fluxErr=None, G=None, fullOutput=False,
         y = np.concatenate([flux, np.mean(flux) * np.ones(nSlices)])
         f = lsq_linear(X, y, bounds=[0, np.inf])
         if fullOutput:
-            return f
+            # Compute the log posterior probability
+            sigma = np.sqrt(2.*f.cost/(len(flux)-nSlices))
+            logProb = -len(flux)*np.log(2*np.pi)/2. - len(flux)*sigma - f.cost / sigma**2
+            errors = sigma**2 * np.linalg.inv(np.matmul(X.T, X))
+            return f.x, errors, logProb
         return f.x
     else:
         # Solve for the slice brightnesses

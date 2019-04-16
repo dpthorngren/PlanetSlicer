@@ -1,6 +1,5 @@
 import numpy as np
-from scipy.stats import norm
-from scipy.optimize import differential_evolution, lsq_linear
+from scipy.optimize import lsq_linear
 
 
 def angleWrap(x):
@@ -34,36 +33,28 @@ def toPhaseCurve(j, xi, G=None):
     return np.matmul(G, j)
 
 
-def fromPhaseCurve(xi, flux, nSlices, fluxErr=None, G=None, fullOutput=False,
-                   brightnessMax=10., priorStd=1e3):
-    '''Computes the slice brightnesses from a given phase curve.  Technically,
-    this is a linear model, but it is so poorly-behaved that this approach uses
-    differential evolution to solve the equations.  This can *still* be
-    unreliable for larger numbers of slices, so be cautious.'''
+def fromPhaseCurve(xi, flux, nSlices, priorStd=1e3, xiPredict=None, G=None,
+                   brightnessMin=0, brightnessMax=np.inf, fullOutput=False):
+    '''Computes the slice brightnesses from a given phase curve and prior uncertainty.'''
     # Compute G if it was not provided
     if G is None:
         G = getG(xi, nSlices)
-    # If fluxErr is not provided, just use flat flux uncertainties.
-    if fluxErr is None:
-        fluxErr = np.ones(len(flux))
-
-    if priorStd and priorStd > 0:
-        # Compute with bounded ridge regression using the pseudo-observations method.
-        X = np.vstack([G, np.eye(nSlices)/priorStd])
-        y = np.concatenate([flux, np.mean(flux) * np.ones(nSlices)])
-        f = lsq_linear(X, y, bounds=[0, np.inf])
-        if fullOutput:
-            # Compute the log posterior probability
-            sigma = np.sqrt(2.*f.cost/(len(flux)-nSlices))
-            logProb = -len(flux)*np.log(2*np.pi)/2. - len(flux)*sigma - f.cost / sigma**2
-            errors = sigma**2 * np.linalg.inv(np.matmul(X.T, X))
-            return f.x, errors, logProb
+    # Compute with bounded ridge regression using the pseudo-observations method.
+    X = np.vstack([G, np.eye(nSlices)/priorStd])
+    y = np.concatenate([flux, np.mean(flux) * np.ones(nSlices) / (2*priorStd)])
+    f = lsq_linear(X, y, bounds=[brightnessMin, brightnessMax])
+    if not fullOutput:
         return f.x
-    else:
-        # Solve for the slice brightnesses
-        j = differential_evolution(
-            lambda j: (((np.matmul(G, j)-flux)/fluxErr)**2).sum(),
-            list(zip(np.zeros(nSlices), brightnessMax*np.ones(nSlices))))
-        if fullOutput:
-            return j
-        return j.x
+    # Compute the log posterior probability
+    sigma = np.sqrt(2.*f.cost/(len(flux)-nSlices))
+    logProb = -len(flux)*np.log(2*np.pi)/2. - len(flux)*sigma - f.cost / sigma**2
+    # Get the uncertainties on the brightness
+    errors = sigma**2 * np.linalg.inv(np.matmul(X.T, X))
+    output = {'brightness': f.x, 'brightnessCov': errors, 'logProb': logProb}
+    if xiPredict is not None:
+        # Make predictions for the requested points
+        gPredict = getG(xi, nSlices)
+        output['fluxPredict'] = np.matmul(gPredict, f.x)
+        output['fluxPredictCov'] = \
+            np.matmul(gPredict, np.matmul(errors, gPredict.T)) + sigma**2 * np.eye(len(xi))
+    return output

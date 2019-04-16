@@ -41,8 +41,8 @@ def toPhaseCurve(xi, j, jErr=None, residNoise=0., G=None):
     return mean
 
 
-def fromPhaseCurve(xi, flux, nSlices, priorStd=1e3, xiPredict=None, G=None,
-                   brightnessMin=0, brightnessMax=np.inf, fullOutput=False):
+def fromPhaseCurve(xi, flux, nSlices, priorStd=1e3, G=None, brightnessMin=0,
+                   brightnessMax=np.inf, fullOutput=False):
     '''Computes the slice brightnesses from a given phase curve and prior uncertainty.'''
     # Compute G if it was not provided
     if G is None:

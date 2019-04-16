@@ -25,12 +25,20 @@ def getG(xi, nSlices):
     return np.sin(alpha_plus) - np.sin(alpha_minus)
 
 
-def toPhaseCurve(j, xi, G=None):
-    '''Computes the phase curve from slice brightnesses.'''
+def toPhaseCurve(xi, j, jErr=None, residNoise=0., G=None):
+    '''Computes the phase curve from slice brightnesses, with optional uncertainties'''
     # Compute G if it was not provided
     if G is None:
         G = getG(xi, len(j))
-    return np.matmul(G, j)
+    mean = np.matmul(G, j)
+    if jErr is not None:
+        # If jErr is standard deviations, get the covariance matrix equivalent
+        if jErr.ndim == 1:
+            jErr = np.diag(jErr**2)
+        # Make predictions for the requested points
+        err = np.matmul(G, np.matmul(jErr + residNoise, G.T))
+        return mean, err
+    return mean
 
 
 def fromPhaseCurve(xi, flux, nSlices, priorStd=1e3, xiPredict=None, G=None,
@@ -47,14 +55,7 @@ def fromPhaseCurve(xi, flux, nSlices, priorStd=1e3, xiPredict=None, G=None,
         return f.x
     # Compute the log posterior probability
     sigma = np.sqrt(2.*f.cost/(len(flux)-nSlices))
-    logProb = -len(flux)*np.log(2*np.pi)/2. - len(flux)*sigma - f.cost / sigma**2
+    logLike = -len(flux)*np.log(2*np.pi)/2. - len(flux)*sigma - f.cost / sigma**2
     # Get the uncertainties on the brightness
     errors = sigma**2 * np.linalg.inv(np.matmul(X.T, X))
-    output = {'brightness': f.x, 'brightnessCov': errors, 'logProb': logProb}
-    if xiPredict is not None:
-        # Make predictions for the requested points
-        gPredict = getG(xi, nSlices)
-        output['fluxPredict'] = np.matmul(gPredict, f.x)
-        output['fluxPredictCov'] = \
-            np.matmul(gPredict, np.matmul(errors, gPredict.T)) + sigma**2 * np.eye(len(xi))
-    return output
+    return {'brightness': f.x, 'brightnessCov': errors, 'logLike': logLike, 'residStd': sigma}

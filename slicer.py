@@ -36,7 +36,7 @@ def toPhaseCurve(xi, j, jErr=None, residNoise=0., G=None):
         if jErr.ndim == 1:
             jErr = np.diag(jErr**2)
         # Make predictions for the requested points
-        err = np.matmul(G, np.matmul(jErr + residNoise, G.T))
+        err = np.matmul(G, np.matmul(jErr + residNoise**2 * np.eye(len(jErr)), G.T))
         return mean, err
     return mean
 

@@ -42,8 +42,8 @@ def getG(phiObs, nSlices, phiIn=None):
         phiPlus = np.clip(phiPlus, phiIn-np.pi/2, phiIn+np.pi/2)
         phiMinus = np.clip(phiMinus, phiIn-np.pi/2, phiIn+np.pi/2)
         # Evaluate the upper and lower bounds of the integral
-        return (.5*phiPlus*np.cos(phiIn-phiObs) - .25*np.sin(phiIn+phiObs-2*phiPlus) +
-                -.5*phiMinus*np.cos(phiIn-phiObs) + .25*np.sin(phiIn+phiObs-2*phiMinus))
+        return (2*phiPlus*np.cos(phiIn-phiObs) - np.sin(phiIn+phiObs-2*phiPlus) +
+                -2*phiMinus*np.cos(phiIn-phiObs) + np.sin(phiIn+phiObs-2*phiMinus)) / 3.
     return np.sin(phiPlus - phiObs) - np.sin(phiMinus - phiObs)
 
 

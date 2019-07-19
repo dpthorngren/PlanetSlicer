@@ -52,12 +52,12 @@ def toPhaseCurve(phiObs, j, phiIn=None, jErr=None, residNoise=0., G=None):
 
     args:
         phiObs: The longitude above which each observation is to be simulated, as an array of length
-            [observations], in radians from -π to π.
+            [observations], in radians from -pi to pi.
         j: The brightness (energy per area) for each slice.  Alternatively if `phiIn` is given,
             it is the surface albedo for each slice.  Either way, it should be an array of
             length [slices].
         phiIn (optional): The longitude above which is the source of illumination, in radians from
-            -π to π.  If not specified, the object is assumed to be self-luminous.  Otherwise,
+            -pi to pi.  If not specified, the object is assumed to be self-luminous.  Otherwise,
             it should be an array of shape [observations].  The default is None.
         jErr (optional): The uncertainty on j, from which to compute the uncertainty in the
             predicted phase curve.  If unspecified, then no uncertainty is computed.  Otherwise,
@@ -92,11 +92,11 @@ def fromPhaseCurve(phiObs, flux, nSlices, phiIn=None, priorStd=1e3, G=None, brig
 
     args:
         phiObs: The longitude above which each observation was made, as an array of length
-            [observations], in radians from -π to π.
+            [observations], in radians from -pi to pi.
         flux: The brightness observed for each observation, as an array of length [observations].
         nSlices: The number of slices to use in the model, which must be an integer greater than 0.
         phiIn (optional): The longitude above which is the source of illumination, in radians from
-            -π to π.  If not specified, the object is assumed to be self-luminous.  Otherwise, it
+            -pi to pi.  If not specified, the object is assumed to be self-luminous.  Otherwise, it
             should be an array of shape [observations].  The default is None.
         priorStd (optional): The standard deviation of the prior on the slice brightnesses.
             Setting a large value can mimic a flat prior, but can cause numerical problems if G

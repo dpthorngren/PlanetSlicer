@@ -48,7 +48,30 @@ def getG(phiObs, nSlices, phiIn=None):
 
 
 def toPhaseCurve(phiObs, j, phiIn=None, jErr=None, residNoise=0., G=None):
-    '''Computes the phase curve from slice brightnesses, with optional uncertainties'''
+    '''Computes the phase curve from slice brightnesses, with optional uncertainties.
+
+    args:
+        phiObs: The longitude above which each observation is to be simulated, as an array of length
+            [observations], in radians from -π to π.
+        j: The brightness (energy per area) for each slice.  Alternatively if `phiIn` is given,
+            it is the surface albedo for each slice.  Either way, it should be an array of
+            length [slices].
+        phiIn (optional): The longitude above which is the source of illumination, in radians from
+            -π to π.  If not specified, the object is assumed to be self-luminous.  Otherwise,
+            it should be an array of shape [observations].  The default is None.
+        jErr (optional): The uncertainty on j, from which to compute the uncertainty in the
+            predicted phase curve.  If unspecified, then no uncertainty is computed.  Otherwise,
+            it should be an array of shape [slices].  The default is None.
+        residNoise (optional): Additional white noise to add to the unceretainty in the predicted
+            phase curve, as a float.  Ignored if jErr is None.  The default is 0.
+        G (optional): The matrix which relates slice brightness to observed total brightnesses,
+            whose shape is [observations X slices].  This is calculated automatically if not
+            specified.  The default is None.
+
+    returns:
+        The predicted observed flux relative to the incident flux as an array of length
+        [observations].  If jErr was specified, then the uncertainty is also returned
+        with the same shape.'''
     # Compute G if it was not provided
     if G is None:
         G = getG(phiObs, len(j), phiIn)
@@ -65,7 +88,34 @@ def toPhaseCurve(phiObs, j, phiIn=None, jErr=None, residNoise=0., G=None):
 
 def fromPhaseCurve(phiObs, flux, nSlices, phiIn=None, priorStd=1e3, G=None, brightnessMin=0,
                    brightnessMax=np.inf, fullOutput=False):
-    '''Computes the slice brightnesses from a given phase curve and prior uncertainty.'''
+    '''Computes the slice brightnesses from a given phase curve with optional uncertainties.
+
+    args:
+        phiObs: The longitude above which each observation was made, as an array of length
+            [observations], in radians from -π to π.
+        flux: The brightness observed for each observation, as an array of length [observations].
+        nSlices: The number of slices to use in the model, which must be an integer greater than 0.
+        phiIn (optional): The longitude above which is the source of illumination, in radians from
+            -π to π.  If not specified, the object is assumed to be self-luminous.  Otherwise, it
+            should be an array of shape [observations].  The default is None.
+        priorStd (optional): The standard deviation of the prior on the slice brightnesses.
+            Setting a large value can mimic a flat prior, but can cause numerical problems if G
+            is not full rank.  The default is 1000.
+        G (optional): The matrix which relates slice brightness to observed total brightnesses,
+            whose shape is [observations X slices].  This is calculated automatically if not
+            specified.  The default is None.
+        brightnessMin (optional): The minimum allowed brightness for each slice.  The default is 0.
+        brightnessMax (optional): The maximum allowed brightness for each slice.  If `phiIn` is set,
+            this is the max albedo which you may wish to set to 1 (the maximum possible surface
+            albedo).  The default is positive infinity.
+        fullOutput (optional): If True, returns a dictionary containing uncertainty information in
+            addition to the usual output.  The default is False.
+
+    returns:
+        The brightnesses inferred for the slices, as an array of length [slices].  If `phiIn` was
+        set, these are surface albedos.  If `fullOutput` was set to true, the function instead
+        returns a dictionary containing the brightnesses (or albedos), the posterior covariance,
+        the log likelihood of the model, and the residual standard deviation.'''
     # Compute G if it was not provided
     if G is None:
         G = getG(phiObs, nSlices, phiIn)

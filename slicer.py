@@ -44,7 +44,7 @@ def getG(phiObs, nSlices, phiIn=None):
         # Evaluate the upper and lower bounds of the integral
         return (2*phiPlus*np.cos(phiIn-phiObs) - np.sin(phiIn+phiObs-2*phiPlus) +
                 -2*phiMinus*np.cos(phiIn-phiObs) + np.sin(phiIn+phiObs-2*phiMinus)) / 3.
-    return np.sin(phiPlus - phiObs) - np.sin(phiMinus - phiObs)
+    return .5 * np.pi * np.sin(phiPlus - phiObs) - np.sin(phiMinus - phiObs)
 
 
 def toPhaseCurve(phiObs, j, phiIn=None, jErr=None, residNoise=0., G=None):

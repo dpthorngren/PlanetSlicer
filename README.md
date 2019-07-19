@@ -9,7 +9,7 @@ This package contains two key functions: toPhaseCurve and fromPhaseCurve (their 
 
 If `phiIn` is specified for either of these functions, then instead of modeling a self-luminous object, they model one diffusely reflecting light, where `phiIn` gives the longitude pointing towards the source of the light, presumably the parent star.  In this case, the output of fromPhaseCurve and input of toPhaseCurve is no longer the slice brightness, but instead its surface albedo.  Phi (in `phiIn` and `phiOut`) always refers to a planet longitude in radians from -π to π; the zero point (prime meridian) may be arbitrarily chosen, so long as it is consistently used.
 
-Note that the albedo given is the surface albedo.  If an equivalent of the [geometric albedo](https://en.wikipedia.org/wiki/Geometric_albedo) is desired, one must normalize against a fully reflective Lambertian disk, which can be achieved simply by dividing the surface albedo by 2π/3.
+Note that the albedo given is the surface albedo.  If an equivalent of the [geometric albedo](https://en.wikipedia.org/wiki/Geometric_albedo) is desired, one must normalize against a fully reflective Lambertian disk, which can be achieved simply by multiplying the surface albedo by 2π/3.
 
 ### toPhaseCurve()
 Computes the phase curve from slice brightnesses, with optional uncertainties.

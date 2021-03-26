@@ -44,24 +44,31 @@ Returns: The brightnesses inferred for the slices, as an array of length [slices
 
 The flux from an object is the integral of its surface brightness `S` over that surface from the perspective of the observer.  For the surface of a sphere, this is:
 
-![Base Integral](https://latex.codecogs.com/gif.latex?J&space;&=&space;\int_{-\pi}^{\pi}&space;\int_0^\pi&space;S(\theta,\phi)&space;\sin(\theta)&space;d\theta&space;d\phi)
+<!--- J=\int_{-\pi}^\pi \int_0^\pi S(\theta,\phi) \sin(\theta) d\theta d\phi --->
+![Base Integral](https://latex.codecogs.com/svg.latex?\large&space;J=\int_{-\pi}^\pi&space;\int_0^\pi&space;S(\theta,\phi)&space;\sin(\theta)&space;d\theta&space;d\phi)
 
 If we divide the surface into slices and assume Lambertian emission (or reflection), we have the contribution of the ith slice as:
 
-![Lambertian Integral](https://latex.codecogs.com/gif.latex?J_i&space;&=&space;\int_{\phi_-}^{\phi_&plus;}&space;\int_0^\pi&space;S_i&space;\cos(\phi-\phi_\mathrm{obs})&space;\sin^2(\theta)d\theta&space;d\phi)
+<!--- J_i = \int_{\phi_-}^{\phi_+} \int_0^\pi S_i \cos(\phi-\phi_{obs}) \sin^2(\theta) d\theta d\phi --->
+![Lambertian Integral](https://latex.codecogs.com/svg.latex?\large&space;J_i&space;=&space;\int_{\phi_-}^{\phi_&plus;}&space;\int_0^\pi&space;S_i&space;\cos(\phi-\phi_{obs})&space;\sin^2(\theta)&space;d\theta&space;d\phi)
 
  where `phi_obs` is the longitude pointing towards the observer, and `phi-` and `phi+` are the boundaries of the slice, clipped to exclude portions on the far side of the object from the observer (following Cowan and Agol 2008).  If the light is from the object's own self-luminosity, we may complete the integration to get:
  
-![Partly Finished Integral](https://latex.codecogs.com/gif.latex?J_i&space;=&space;\frac{\pi}{2}&space;\int_{\phi_-}^{\phi_&plus;}&space;S_i&space;\cos(\phi-\phi_\mathrm{obs})&space;d\phi)
+ <!--- J_i = \frac{\pi}{2} \int_{\phi_-}^{\phi^+} S_i \cos(\phi - \phi_{obs}) d\phi --->
+![Partly Finished Integral](https://latex.codecogs.com/svg.latex?\large&space;J_i&space;=&space;\frac{\pi}{2}&space;\int_{\phi_-}^{\phi^&plus;}&space;S_i&space;\cos(\phi&space;-&space;\phi_{obs})&space;d\phi)
  
- ![Self-Luminous Slice](https://latex.codecogs.com/gif.latex?J_i&space;=&space;\frac{\pi}{2}&space;\left[\sin(\phi_&plus;)&space;-&space;\sin(\phi_-)\right])
+ <!--- J_i = \frac{\pi}{2} \left[\sin(\phi_+) - \sin(\phi_-)\right] --->
+ ![Self-Luminous Slice](https://latex.codecogs.com/svg.latex?\large&space;J_i&space;=&space;\frac{\pi}{2}&space;\left[\sin(\phi_&plus;)&space;-&space;\sin(\phi_-)\right])
  
  However, if the object is not self-luminous, and is instead reflecting incoming light with flux `F`, then `S_i` takes a different, form, and we instead have (Mayorga et al., in prep.):
  
-![Partially Simplified Reflective](https://latex.codecogs.com/gif.latex?J_i&space;=&space;\int_{\phi_-}^{\phi_&plus;}&space;\int_0^\pi&space;(A_i&space;F&space;\sin(\theta)&space;\cos(\phi-\phi_\mathrm{in}))&space;\cos(\phi-\phi_\mathrm{obs})&space;\sin^2(\theta)&space;d\theta&space;d\phi)
+ <!--- J_i = \int_{\phi_-}^{\phi_+}\int_0^\pi \left[ A_i F \sin(\theta) \cos(\phi - \phi_{in}) \right] \cos(\phi - \phi_{obs}) \sin^2(\theta) d\theta d\phi --->
+![Partially Simplified Reflective](https://latex.codecogs.com/svg.latex?\large&space;J_i&space;=&space;\int_{\phi_-}^{\phi_&plus;}\int_0^\pi&space;\left[&space;A_i&space;F&space;\sin(\theta)&space;\cos(\phi&space;-&space;\phi_{in})&space;\right]&space;\cos(\phi&space;-&space;\phi_{obs})&space;\sin^2(\theta)&space;d\theta&space;d\phi)
  
-![Mostly Simplified Reflective](https://latex.codecogs.com/gif.latex?J_i&space;=&space;\frac{4&space;F&space;A_i}{3}&space;\int_{\phi_-}^{\phi_&plus;}&space;\cos(\phi-\phi_\mathrm{in})&space;\cos(\phi-\phi_\mathrm{obs})&space;d\phi)
+ <!--- J_i = \frac{4 F A_i}{3} \int_{\phi_-}^{\phi_+} \cos(\phi - \phi_{in}) \cos(\phi - \phi_{obs}) d\phi --->
+![Mostly Simplified Reflective](https://latex.codecogs.com/svg.latex?\large&space;J_i&space;=&space;\frac{4&space;F&space;A_i}{3}&space;\int_{\phi_-}^{\phi_&plus;}&space;\cos(\phi&space;-&space;\phi_{in})&space;\cos(\phi&space;-&space;\phi_{obs})&space;d\phi)
 
-![Reflective Slice](https://latex.codecogs.com/gif.latex?J_i&space;=&space;\left.&space;\frac{F_*&space;A_i}{3}&space;\left(&space;2&space;\phi&space;\cos(\phi_\mathrm{in}&space;-&space;\phi_\mathrm{obs})&space;-&space;\sin(\phi_\mathrm{obs}&space;&plus;&space;\phi_\mathrm{in}&space;-&space;2\phi)&space;\right)&space;\right|_{\phi_-}^{\phi_&plus;})
+<!--- J_i = \left. \frac{4 F A_i}{3} \left[ 2 \phi \cos(\phi_{in} - \phi_{obs}) - \sin(\phi_{obs} + \phi_{in} - 2\phi)\right] \right|_{\phi_-}^{\phi_+} --->
+![Reflective Slice](https://latex.codecogs.com/svg.latex?\large&space;J_i&space;=&space;\left.&space;\frac{4&space;F&space;A_i}{3}&space;\left[&space;2&space;\phi&space;\cos(\phi_{in}&space;-&space;\phi_{obs})&space;-&space;\sin(\phi_{obs}&space;&plus;&space;\phi_{in}&space;-&space;2\phi)\right]&space;\right|_{\phi_-}^{\phi_&plus;})
 
 This code implements these equations, the limits of integration, the sum across slices, and the inverse of this process with Bayesian handling of the uncertainties, equivalent to [ridge regression](https://en.wikipedia.org/wiki/Tikhonov_regularization).

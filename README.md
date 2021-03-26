@@ -1,5 +1,5 @@
 # PlanetSlicer
-This is a small package for fitting brightness maps to phase curves using the "orange-slice" method.  For self-luminous objects, this follows [Cowan and Agol (2008) "Inverting Phase Functions to Map Exoplanets"](https://doi.org/10.1017/S1743921308027166).  We have extended this approach to diffuse reflected light assuming [Lambertian reflectance](https://en.wikipedia.org/wiki/Lambertian_reflectance), in Mayorga et. al (in prep).  In both cases, the model supposes that a spherical object can be divided into slices of constant brightness (or albedo) which may be integrated to yield the total flux observed, given the angle(s) of observation `phiObs`.
+This is a small package for fitting brightness maps to phase curves using the "orange-slice" method.  For self-luminous objects, this follows [Cowan and Agol (2008) "Inverting Phase Functions to Map Exoplanets"](https://doi.org/10.1017/S1743921308027166).  We have extended this approach to diffuse reflected light assuming [Lambertian reflectance](https://en.wikipedia.org/wiki/Lambertian_reflectance), in [Mayorga et. al (2020)](https://doi.org/10.3847/1538-3881/abb8df).  In both cases, the model supposes that a spherical object can be divided into slices of constant brightness (or albedo) which may be integrated to yield the total flux observed, given the angle(s) of observation `phiObs`.
 
 ## Installation
 The package consists only of a single file, slicer.py, which may be added to the Python path or copied into the directory where it is to be used.  The only requirements are [Numpy](https://numpy.org/) and [Scipy](https://www.scipy.org/), which may be installed manually or using [pip](https://pypi.org/project/pip/).
@@ -60,7 +60,7 @@ If we divide the surface into slices and assume Lambertian emission (or reflecti
  <!--- J_i = \frac{\pi}{2} \left[\sin(\phi_+) - \sin(\phi_-)\right] --->
  ![Self-Luminous Slice](https://latex.codecogs.com/svg.latex?\large&space;J_i&space;=&space;\frac{\pi}{2}&space;\left[\sin(\phi_&plus;)&space;-&space;\sin(\phi_-)\right])
  
- However, if the object is not self-luminous, and is instead reflecting incoming light with flux `F`, then `S_i` takes a different, form, and we instead have (Mayorga et al., in prep.):
+ However, if the object is not self-luminous, and is instead reflecting incoming light with flux `F`, then `S_i` takes a different, form, and we instead have [(Mayorga et al.2020)](https://doi.org/10.3847/1538-3881/abb8df):
  
  <!--- J_i = \int_{\phi_-}^{\phi_+}\int_0^\pi \left[ A_i F \sin(\theta) \cos(\phi - \phi_{in}) \right] \cos(\phi - \phi_{obs}) \sin^2(\theta) d\theta d\phi --->
 ![Partially Simplified Reflective](https://latex.codecogs.com/svg.latex?\large&space;J_i&space;=&space;\int_{\phi_-}^{\phi_&plus;}\int_0^\pi&space;\left[&space;A_i&space;F&space;\sin(\theta)&space;\cos(\phi&space;-&space;\phi_{in})&space;\right]&space;\cos(\phi&space;-&space;\phi_{obs})&space;\sin^2(\theta)&space;d\theta&space;d\phi)
